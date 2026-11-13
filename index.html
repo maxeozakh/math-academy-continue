@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Math Academy · Continue button placement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=block" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
@@ -11,10 +14,13 @@
   :root {
     --blue: #2e66b0;
     --blue-hover: #255597;
+    --disabled: #d3d6db;
     --progress: #5a9be0;
     --navy: #1f2a68;
     --text: #222;
     --border: #e3e6ea;
+    --good: #2f9e5b;
+    --bad: #d0574a;
     --header-h: 56px;
   }
   * { box-sizing: border-box; }
@@ -36,10 +42,7 @@
     display: flex; align-items: center; justify-content: center;
     z-index: 10;
   }
-  .header-inner {
-    display: flex; align-items: center; gap: 16px;
-    width: 520px;
-  }
+  .header-inner { display: flex; align-items: center; gap: 16px; width: 520px; }
   .nav-arrow {
     border: 0; background: none; color: #9aa0a6; font-size: 20px;
     cursor: pointer; padding: 4px 8px; line-height: 1;
@@ -58,22 +61,25 @@
     border: 0; background: none; font-size: 22px; color: #555; cursor: pointer;
   }
 
-  /* ---------- Button ---------- */
+  /* ---------- Buttons ---------- */
   .btn {
     border: 0; border-radius: 999px;
     background: var(--blue); color: #fff;
-    font: inherit; font-size: 12px; font-weight: 600;
+    font: inherit; font-size: 12px; font-weight: 700;
     padding: 8px 22px; cursor: pointer;
     transition: background .15s, transform .1s, box-shadow .2s;
     white-space: nowrap;
   }
   .btn:hover { background: var(--blue-hover); }
   .btn:active { transform: translateY(1px); }
+  .btn:disabled { background: var(--disabled); cursor: default; transform: none; }
+  .btn .lbl { display: inline-block; min-width: 50px; text-align: center; }
   .kbd {
     display: inline-block; margin-left: 8px; padding: 0 5px;
     border: 1px solid rgba(255,255,255,.45); border-radius: 4px;
     font-size: 10px; line-height: 15px; opacity: .85;
   }
+  [hidden] { display: none !important; }
 
   /* ---------- Content ---------- */
   main {
@@ -96,6 +102,40 @@
   .katex { font-size: 1.08em; }
   .katex-display { margin: 8px 0 14px; }
   .graph { display: flex; justify-content: center; margin: 4px 0 18px; }
+
+  /* ---------- Questions ---------- */
+  .fields { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 18px 0 22px; }
+  .fields .sep { margin: 0 22px 0 2px; }
+  .field {
+    width: 38px; height: 26px; border: 1px solid #cfd3d8; border-radius: 2px;
+    font: inherit; font-size: 13px; text-align: center; color: var(--text); background: #fff;
+    outline: none;
+  }
+  .field:focus, .field.is-focus { border-color: var(--progress); box-shadow: 0 0 0 2px rgba(90,155,224,.25); }
+  .field.right { border-color: var(--good); color: var(--good); }
+  .field.wrong { border-color: var(--bad); color: var(--bad); }
+  .choices { list-style: none; padding: 0 !important; margin: 16px 0 20px !important; display: flex; flex-direction: column; gap: 10px; }
+  .choices li { margin: 0 !important; }
+  .choice {
+    display: flex; align-items: center; gap: 12px;
+    border: 0; background: none; font: inherit; color: inherit; cursor: pointer; padding: 0;
+  }
+  .choice:disabled { cursor: default; }
+  .badge {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid #dcdfe3; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; color: #333; background: #fff;
+    transition: background .12s, border-color .12s;
+  }
+  .choice:not(:disabled):hover .badge { border-color: #b9bec5; }
+  .choice.selected .badge { background: #3b3b3b; border-color: #3b3b3b; color: #fff; }
+  .choice.right .badge { background: var(--good); border-color: var(--good); color: #fff; }
+  .choice.wrong .badge { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .card-submit { margin-top: 2px; }
+  .feedback { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 14px; }
+  .verdict { font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+  .verdict.right { color: var(--good); }
+  .verdict.wrong { color: var(--bad); }
 
   .footer-inline { width: 408px; margin-top: 28px; }
 
@@ -126,7 +166,7 @@
     margin-top: 0; padding: 28px 0 20px;
     background: linear-gradient(to bottom, rgba(255,255,255,0), #fff 45%);
   }
-  body[data-variant="dock"] .footer-inline.stuck .btn {
+  body[data-variant="dock"] .footer-inline.stuck .btn:not(:disabled) {
     box-shadow: 0 6px 18px rgba(46,102,176,.35);
   }
   body[data-variant="dock"] main { padding-bottom: 60px; }
@@ -146,6 +186,7 @@
   .switcher input { margin-right: 6px; vertical-align: -1px; }
   .switcher label small { display: block; color: #9aa3b5; margin-left: 20px; margin-top: 2px; line-height: 1.35; }
   .switcher .row { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; padding-top: 8px; color: #9aa3b5; }
+  .switcher a { color: #8fb8ff; }
   body[data-variant="footer"] .switcher { bottom: 72px; }
 
   .toast {
@@ -155,7 +196,6 @@
     font-size: 12px; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 30;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
-  .switcher a { color: #8fb8ff; }
 
   /* The film drives this page frame by frame, so nothing may animate on the wall clock. */
   body.embed *, body.embed *::before, body.embed *::after { transition: none !important; }
@@ -170,7 +210,7 @@
     <button class="nav-arrow" id="prev" aria-label="Previous">‹</button>
     <div class="progress" id="progress"></div>
     <button class="nav-arrow" id="next" aria-label="Next">›</button>
-    <button class="btn top-continue js-continue">Continue<span class="kbd">↵</span></button>
+    <button class="btn top-continue js-action"><span class="lbl">Continue</span><span class="kbd">↵</span></button>
   </div>
   <button class="close" aria-label="Close">×</button>
 </header>
@@ -178,14 +218,14 @@
 <main>
   <article class="card" id="card"></article>
   <div class="footer-inline" id="footerInline">
-    <button class="btn js-continue">Continue</button>
+    <button class="btn js-action"><span class="lbl">Continue</span></button>
   </div>
   <div id="dockSentinel" style="height:1px;width:1px"></div>
 </main>
 
 <div class="sticky-footer">
   <div class="sticky-footer-inner">
-    <button class="btn js-continue">Continue<span class="kbd">↵</span></button>
+    <button class="btn js-action"><span class="lbl">Continue</span><span class="kbd">↵</span></button>
     <span class="hint" id="footerHint"></span>
   </div>
 </div>
@@ -195,14 +235,14 @@
 <aside class="switcher">
   <h3>Continue placement</h3>
   <label><input type="radio" name="v" value="original" />Original
-    <small>Inline after the content. Long lessons mean scrolling to the end.</small></label>
+    <small>Submit in the card, Continue after the content. Long steps mean scrolling to the end.</small></label>
   <label><input type="radio" name="v" value="top" checked />A · In the top bar
     <small>Next to the progress bar, always visible.</small></label>
   <label><input type="radio" name="v" value="footer" />B · Sticky footer
     <small>Fixed bar at the bottom, where the thumb and the eye end up.</small></label>
   <label><input type="radio" name="v" value="dock" />C · Docking button
     <small>Floats at the bottom while content overflows, settles under the card at the end.</small></label>
-  <div class="row">Enter ↵ continues in every variant. Steps alternate long and short content.</div>
+  <div class="row">Submit and Continue share one button. Enter ↵ triggers it in every variant.</div>
   <div class="row"><a href="video/before-after.mp4">▶ Watch the before / after film</a></div>
 </aside>
 
@@ -210,6 +250,7 @@
   const TOTAL = 14;
   const steps = [
     {
+      type: "lesson",
       title: "Introduction",
       html: `
         <p>Consider the line $y = x + 2$ and the parabola $y = x^2 + x + 1$, shown in the graph below.</p>
@@ -232,37 +273,164 @@
         <p>Therefore, we conclude that the points of intersection are $(-1, 1)$ and $(1, 3)$.</p>`
     },
     {
+      type: "input",
+      html: `<p>The parabola $y = -x^2 + 2x + 3$ and the line $y = -2x - 2$ intersect at the points $(x_1, y_1)$ and $(x_2, y_2)$, where $x_1 < x_2$. Find the values of $x_1$ and $x_2$.</p>`,
+      fields: [{ id: "x1", label: "x_1" }, { id: "x2", label: "x_2" }],
+      answer: { x1: "-1", x2: "5" },
+      solution: `
+        <p>Set the two expressions for $y$ equal to each other:</p>
+        $$\\begin{aligned} -x^2 + 2x + 3 &= -2x - 2 \\\\ -x^2 + 4x + 5 &= 0 \\\\ x^2 - 4x - 5 &= 0 \\\\ (x + 1)(x - 5) &= 0 \\\\ x &= -1, 5. \\end{aligned}$$
+        <p>Since $x_1 < x_2$, we have $x_1 = -1$ and $x_2 = 5$.</p>
+        <p>As a check, both points lie on the line: at $x = -1$ the line gives $y = 0$, and the parabola gives $-1 - 2 + 3 = 0$. At $x = 5$ the line gives $y = -12$, and the parabola gives $-25 + 10 + 3 = -12$.</p>`
+    },
+    {
+      type: "lesson",
       title: "Key idea",
       html: `
         <p>To find where two curves $y = f(x)$ and $y = g(x)$ intersect, solve $f(x) = g(x)$ for $x$, then substitute each solution into either curve to get $y$.</p>
         $$f(x) = g(x)$$`
     },
+    {
+      type: "choice",
+      html: `<p>Calculate the area of the parallelogram spanned by $\\mathbf{u} = \\begin{bmatrix} 2 \\\\ 1 \\end{bmatrix}$ and $\\mathbf{v} = \\begin{bmatrix} 2 \\\\ 4 \\end{bmatrix}$.</p>`,
+      options: ["0", "6", "4", "5", "2"],
+      answer: 1,
+      solution: `
+        <p>The area of the parallelogram spanned by two vectors in the plane is the absolute value of the determinant of the matrix with those vectors as columns:</p>
+        $$\\begin{aligned} \\text{Area} &= \\left| \\det \\begin{bmatrix} 2 & 2 \\\\ 1 & 4 \\end{bmatrix} \\right| \\\\ &= |2 \\cdot 4 - 2 \\cdot 1| \\\\ &= |8 - 2| \\\\ &= 6. \\end{aligned}$$
+        <p>So the area is $6$.</p>`
+    },
   ];
+  const LETTERS = "abcde";
 
   let step = 0;
+  const answers = {};
+  const submitted = {};
+  let focusField = null;
+
   const card = document.getElementById("card");
   const progress = document.getElementById("progress");
   const toast = document.getElementById("toast");
+  const footerInline = document.getElementById("footerInline");
+  const sentinel = document.getElementById("dockSentinel");
 
   for (let i = 0; i < TOTAL; i++) progress.appendChild(document.createElement("span"));
 
+  const current = () => steps[step % steps.length];
+  const isQuestion = s => s.type !== "lesson";
+  const answer = () => answers[step] ?? (answers[step] = current().type === "input" ? {} : { choice: null });
+  function complete() {
+    const s = current(), a = answer();
+    if (s.type === "input") return s.fields.every(f => (a[f.id] ?? "").trim() !== "");
+    if (s.type === "choice") return a.choice !== null;
+    return true;
+  }
+  function correct() {
+    const s = current(), a = answer();
+    if (s.type === "input") return s.fields.every(f => (a[f.id] ?? "").replace(/\s|−/g, m => m === "−" ? "-" : "") === s.answer[f.id]);
+    return a.choice === s.answer;
+  }
+
+  function math(el) {
+    if (!window.renderMathInElement) return;
+    renderMathInElement(el, {
+      delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
+      trust: true, strict: false,
+    });
+  }
+
   function render() {
-    const s = steps[step % steps.length];
-    card.innerHTML = `<div class="card-head"><h2>${s.title}</h2><span class="help">?</span></div>${s.html}`;
-    if (window.renderMathInElement) {
-      renderMathInElement(card, {
-        delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
-        trust: true, strict: false,
-      });
+    const s = current();
+    const title = isQuestion(s) ? `Question ${(step + 1) / 2}` : s.title;
+    let body = s.html;
+    if (s.type === "input") {
+      body += `<div class="fields">${s.fields.map((f, i) =>
+        `<span>$${f.label} =$</span><input class="field" data-field="${f.id}" inputmode="numeric" autocomplete="off" />${i < s.fields.length - 1 ? '<span class="sep">,</span>' : ""}`).join("")}</div>`;
     }
+    if (s.type === "choice") {
+      body += `<ul class="choices">${s.options.map((o, i) =>
+        `<li><button class="choice" data-choice="${i}"><span class="badge">${LETTERS[i]}</span><span>$${o}$</span></button></li>`).join("")}</ul>`;
+    }
+    if (isQuestion(s)) {
+      body += `<button class="btn card-submit js-action"><span class="lbl">Submit</span></button>`;
+      body += `<div class="feedback" hidden><div class="verdict"></div>${s.solution}</div>`;
+    }
+    card.innerHTML = `<div class="card-head"><h2>${title}</h2><span class="help">?</span></div>${body}`;
+    math(card);
+
+    card.querySelectorAll(".field").forEach(inp => {
+      inp.addEventListener("input", () => { answer()[inp.dataset.field] = inp.value; sync(); });
+      inp.addEventListener("focus", () => { focusField = inp.dataset.field; });
+      inp.addEventListener("blur", () => { if (focusField === inp.dataset.field) focusField = null; });
+    });
+    card.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => {
+      if (submitted[step]) return;
+      answer().choice = +b.dataset.choice; sync();
+    }));
+    card.querySelector(".card-submit")?.addEventListener("click", act);
+
     [...progress.children].forEach((el, i) => {
       el.className = i < step ? "done" : i === step ? "current" : "";
     });
     document.getElementById("prev").disabled = step === 0;
     document.getElementById("footerHint").textContent = `Step ${step + 1} of ${TOTAL}`;
+    sync();
+  }
+
+  // Everything that changes within a step without re-rendering the card, so typing keeps focus.
+  function sync() {
+    const s = current(), q = isQuestion(s), done = !!submitted[step], a = answer();
+    const original = document.body.dataset.variant === "original";
+
+    card.querySelectorAll(".field").forEach(inp => {
+      const v = a[inp.dataset.field] ?? "";
+      if (inp.value !== v) inp.value = v;
+      inp.disabled = done;
+      inp.classList.toggle("is-focus", focusField === inp.dataset.field && !done);
+      const ok = (v.replace(/\s|−/g, m => m === "−" ? "-" : "")) === s.answer?.[inp.dataset.field];
+      inp.classList.toggle("right", done && ok);
+      inp.classList.toggle("wrong", done && !ok);
+    });
+    card.querySelectorAll(".choice").forEach(b => {
+      const i = +b.dataset.choice;
+      b.disabled = done;
+      b.classList.toggle("selected", !done && a.choice === i);
+      b.classList.toggle("right", done && i === s.answer);
+      b.classList.toggle("wrong", done && a.choice === i && i !== s.answer);
+    });
+    const fb = card.querySelector(".feedback");
+    if (fb) {
+      fb.hidden = !done;
+      const v = fb.querySelector(".verdict"), ok = done && correct();
+      v.className = "verdict " + (ok ? "right" : "wrong");
+      v.textContent = ok ? "✓ Correct" : "✗ Not quite. Here is the solution:";
+    }
+
+    const label = q && !done ? "Submit" : "Continue";
+    const enabled = !q || done || complete();
+    document.querySelectorAll(".js-action").forEach(b => {
+      b.querySelector(".lbl").textContent = b.classList.contains("card-submit") ? "Submit" : label;
+      b.disabled = !enabled;
+    });
+    const cardSubmit = card.querySelector(".card-submit");
+    if (cardSubmit) cardSubmit.hidden = !(original && q && !done);
+    footerInline.hidden = original && q && !done;
     updateDock();
   }
 
+  function act() {
+    const s = current();
+    if (isQuestion(s) && !submitted[step]) {
+      if (!complete()) return;
+      submitted[step] = true;
+      focusField = null;
+      document.activeElement?.blur?.();
+      sync();
+      showToast(correct() ? "Correct" : "Not quite");
+      return;
+    }
+    next();
+  }
   function next() {
     if (step >= TOTAL - 1) { showToast("Lesson complete 🎉"); return; }
     step++;
@@ -279,17 +447,20 @@
 
   let toastTimer;
   function showToast(text) {
+    if (document.body.classList.contains("embed")) return;
     toast.textContent = text;
     toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove("show"), 1100);
   }
 
-  document.querySelectorAll(".js-continue").forEach(b => b.addEventListener("click", next));
+  document.querySelectorAll(".js-action:not(.card-submit)").forEach(b => b.addEventListener("click", act));
   document.getElementById("next").addEventListener("click", next);
   document.getElementById("prev").addEventListener("click", prev);
   document.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.target.closest("input, textarea")) { e.preventDefault(); next(); }
+    if (e.key !== "Enter" || e.target.closest("textarea, .switcher")) return;
+    e.preventDefault();
+    act();
   });
 
   const params = new URLSearchParams(location.search);
@@ -297,7 +468,7 @@
   function setVariant(v) {
     document.body.dataset.variant = v;
     document.querySelectorAll('.switcher input').forEach(r => { r.checked = r.value === v; });
-    updateDock();
+    sync();
   }
 
   document.querySelectorAll('.switcher input').forEach(r => r.addEventListener("change", () => {
@@ -306,21 +477,27 @@
   }));
 
   // The sentinel sits right after the inline footer; while it is below the viewport the sticky button is floating.
-  const footerInline = document.getElementById("footerInline");
-  const sentinel = document.getElementById("dockSentinel");
   function updateDock() {
     footerInline.classList.toggle("stuck", sentinel.getBoundingClientRect().top > innerHeight);
   }
   addEventListener("scroll", updateDock, { passive: true });
   addEventListener("resize", updateDock);
 
-  if (VARIANTS.includes(params.get("variant"))) setVariant(params.get("variant"));
+  if (VARIANTS.includes(params.get("variant"))) document.body.dataset.variant = params.get("variant");
+  document.querySelectorAll('.switcher input').forEach(r => { r.checked = r.value === document.body.dataset.variant; });
   if (params.has("embed")) document.body.classList.add("embed");
 
   window.lesson = {
     TOTAL,
     setVariant,
     go(n) { step = n; render(); },
+    // the film sets the answer state of the current step directly, one frame at a time
+    setAnswer(value, isSubmitted, focus = null) {
+      answers[step] = { ...(current().type === "input" ? {} : { choice: null }), ...value };
+      submitted[step] = isSubmitted;
+      focusField = focus;
+      sync();
+    },
     updateDock,
   };
 
