@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Math Academy · Continue button placement</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    --blue: #2e66b0;
+    --blue-hover: #255597;
+    --progress: #5a9be0;
+    --navy: #1f2a68;
+    --text: #222;
+    --border: #e3e6ea;
+    --header-h: 56px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    position: fixed; inset: 0 0 auto 0;
+    height: var(--header-h);
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+  }
+  .header-inner {
+    display: flex; align-items: center; gap: 16px;
+    width: 520px;
+  }
+  .nav-arrow {
+    border: 0; background: none; color: #9aa0a6; font-size: 20px;
+    cursor: pointer; padding: 4px 8px; line-height: 1;
+  }
+  .nav-arrow:disabled { color: #d6d9dd; cursor: default; }
+  .progress { flex: 1; display: flex; gap: 3px; }
+  .progress span {
+    flex: 1; height: 5px; border-radius: 3px;
+    background: #fff; border: 1px solid #dfe2e6;
+    transition: background .25s, border-color .25s;
+  }
+  .progress span.done { background: var(--progress); border-color: var(--progress); }
+  .progress span.current { background: #b8d4f2; border-color: #b8d4f2; }
+  .close {
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    border: 0; background: none; font-size: 22px; color: #555; cursor: pointer;
+  }
+
+  /* ---------- Button ---------- */
+  .btn {
+    border: 0; border-radius: 999px;
+    background: var(--blue); color: #fff;
+    font: inherit; font-size: 12px; font-weight: 600;
+    padding: 8px 22px; cursor: pointer;
+    transition: background .15s, transform .1s, box-shadow .2s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--blue-hover); }
+  .btn:active { transform: translateY(1px); }
+  .kbd {
+    display: inline-block; margin-left: 8px; padding: 0 5px;
+    border: 1px solid rgba(255,255,255,.45); border-radius: 4px;
+    font-size: 10px; line-height: 15px; opacity: .85;
+  }
+
+  /* ---------- Content ---------- */
+  main {
+    padding: calc(var(--header-h) + 52px) 16px 120px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .card {
+    width: 408px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 8px 14px;
+    background: #fff;
+  }
+  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .card-head h2 { margin: 0; font-size: 14px; font-weight: 700; color: var(--navy); }
+  .card-head .help { color: var(--navy); font-weight: 700; }
+  .card p { margin: 0 0 12px; }
+  .card ul { margin: 0 0 12px; padding-left: 22px; }
+  .card li { margin-bottom: 6px; }
+  .katex { font-size: 1.08em; }
+  .katex-display { margin: 8px 0 14px; }
+  .graph { display: flex; justify-content: center; margin: 4px 0 18px; }
+
+  .footer-inline { width: 408px; margin-top: 28px; }
+
+  /* ---------- Variant: top bar ---------- */
+  .top-continue { display: none; }
+  body[data-variant="top"] .top-continue { display: inline-block; }
+  body[data-variant="top"] .footer-inline { display: none; }
+  body[data-variant="top"] .header-inner { width: 640px; }
+
+  /* ---------- Variant: sticky footer ---------- */
+  .sticky-footer {
+    position: fixed; inset: auto 0 0 0;
+    background: rgba(255,255,255,.96);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--border);
+    display: none; justify-content: center;
+    padding: 12px 16px;
+    z-index: 10;
+  }
+  .sticky-footer-inner { width: 408px; display: flex; justify-content: space-between; align-items: center; }
+  .sticky-footer .hint { color: #8a9099; font-size: 11px; }
+  body[data-variant="footer"] .sticky-footer { display: flex; }
+  body[data-variant="footer"] .footer-inline { display: none; }
+
+  /* ---------- Variant: docking button ---------- */
+  body[data-variant="dock"] .footer-inline {
+    position: sticky; bottom: 0;
+    margin-top: 0; padding: 28px 0 20px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), #fff 45%);
+  }
+  body[data-variant="dock"] .footer-inline.stuck .btn {
+    box-shadow: 0 6px 18px rgba(46,102,176,.35);
+  }
+  body[data-variant="dock"] main { padding-bottom: 60px; }
+
+  /* ---------- Demo switcher ---------- */
+  .switcher {
+    position: fixed; left: 16px; bottom: 16px; z-index: 20;
+    background: #1d2330; color: #e8eaf0;
+    border-radius: 10px; padding: 12px 14px;
+    width: 250px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    font-family: -apple-system, system-ui, sans-serif; font-size: 12px;
+  }
+  .switcher h3 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #9aa3b5; }
+  .switcher label { display: block; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+  .switcher label:hover { background: rgba(255,255,255,.06); }
+  .switcher input { margin-right: 6px; vertical-align: -1px; }
+  .switcher label small { display: block; color: #9aa3b5; margin-left: 20px; margin-top: 2px; line-height: 1.35; }
+  .switcher .row { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; padding-top: 8px; color: #9aa3b5; }
+  body[data-variant="footer"] .switcher { bottom: 72px; }
+
+  .toast {
+    position: fixed; left: 50%; top: calc(var(--header-h) + 14px);
+    transform: translate(-50%, -8px); opacity: 0;
+    background: #1d2330; color: #fff; padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 30;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .switcher a { color: #8fb8ff; }
+
+  /* The film drives this page frame by frame, so nothing may animate on the wall clock. */
+  body.embed *, body.embed *::before, body.embed *::after { transition: none !important; }
+  body.embed .switcher, body.embed .toast { display: none; }
+  body.embed, html:has(body.embed) { scrollbar-width: none; }
+</style>
+</head>
+<body data-variant="top">
+
+<header class="header">
+  <div class="header-inner">
+    <button class="nav-arrow" id="prev" aria-label="Previous">‹</button>
+    <div class="progress" id="progress"></div>
+    <button class="nav-arrow" id="next" aria-label="Next">›</button>
+    <button class="btn top-continue js-continue">Continue<span class="kbd">↵</span></button>
+  </div>
+  <button class="close" aria-label="Close">×</button>
+</header>
+
+<main>
+  <article class="card" id="card"></article>
+  <div class="footer-inline" id="footerInline">
+    <button class="btn js-continue">Continue</button>
+  </div>
+  <div id="dockSentinel" style="height:1px;width:1px"></div>
+</main>
+
+<div class="sticky-footer">
+  <div class="sticky-footer-inner">
+    <button class="btn js-continue">Continue<span class="kbd">↵</span></button>
+    <span class="hint" id="footerHint"></span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<aside class="switcher">
+  <h3>Continue placement</h3>
+  <label><input type="radio" name="v" value="original" />Original
+    <small>Inline after the content. Long lessons mean scrolling to the end.</small></label>
+  <label><input type="radio" name="v" value="top" checked />A · In the top bar
+    <small>Next to the progress bar, always visible. Your idea.</small></label>
+  <label><input type="radio" name="v" value="footer" />B · Sticky footer
+    <small>Fixed bar at the bottom, where the thumb and the eye end up.</small></label>
+  <label><input type="radio" name="v" value="dock" />C · Docking button
+    <small>Floats at the bottom while content overflows, settles under the card at the end.</small></label>
+  <div class="row">Enter ↵ continues in every variant. Steps alternate long and short content.</div>
+  <div class="row"><a href="video/before-after.mp4">▶ Watch the before / after film</a></div>
+</aside>
+
+<script>
+  const TOTAL = 14;
+  const steps = [
+    {
+      title: "Introduction",
+      html: `
+        <p>Consider the line $y = x + 2$ and the parabola $y = x^2 + x + 1$, shown in the graph below.</p>
+        <div class="graph">${graphSvg()}</div>
+        <p>We can see from the diagram that there are two points of intersection. So let's calculate the coordinates of these intersection points.</p>
+        <p>An intersection point is a common solution of the equations $y = x + 2$ and $y = x^2 + x + 1$. In other words, to get the coordinates of the intersection points, we have to solve the following system of equations:</p>
+        $$\\begin{cases} y = x^2 + x + 1 \\\\ y = x + 2 \\end{cases}$$
+        <p>Setting the equations equal to one another and then solving for $x$ using our knowledge of quadratic equations, we get</p>
+        $$\\begin{aligned} x^2 + x + 1 &= x + 2 \\\\ x^2 + \\cancel{x} + 1 &= \\cancel{x} + 2 \\\\ x^2 + 1 &= 2 \\\\ x^2 - 1 &= 0 \\\\ (x+1)(x-1) &= 0 \\\\ x &= -1, 1. \\end{aligned}$$
+        <p>So, the $x$-coordinates of the intersection points are $x = -1$ and $x = 1$.</p>
+        <p>To find the $y$-coordinates of the intersection points, we plug these values into either curve. Let's choose the line since it's simpler.</p>
+        <ul>
+          <li>Substituting $x = -1$, we get
+            $$\\begin{aligned} y &= x + 2 \\\\ &= (-1) + 2 \\\\ &= 1, \\end{aligned}$$
+            so one point of intersection is $(-1, 1)$.</li>
+          <li>Substituting $x = 1$, we get
+            $$\\begin{aligned} y &= x + 2 \\\\ &= (1) + 2 \\\\ &= 3, \\end{aligned}$$
+            so the other point of intersection is $(1, 3)$.</li>
+        </ul>
+        <p>Therefore, we conclude that the points of intersection are $(-1, 1)$ and $(1, 3)$.</p>`
+    },
+    {
+      title: "Key idea",
+      html: `
+        <p>To find where two curves $y = f(x)$ and $y = g(x)$ intersect, solve $f(x) = g(x)$ for $x$, then substitute each solution into either curve to get $y$.</p>
+        $$f(x) = g(x)$$`
+    },
+  ];
+
+  let step = 0;
+  const card = document.getElementById("card");
+  const progress = document.getElementById("progress");
+  const toast = document.getElementById("toast");
+
+  for (let i = 0; i < TOTAL; i++) progress.appendChild(document.createElement("span"));
+
+  function render() {
+    const s = steps[step % steps.length];
+    card.innerHTML = `<div class="card-head"><h2>${s.title}</h2><span class="help">?</span></div>${s.html}`;
+    if (window.renderMathInElement) {
+      renderMathInElement(card, {
+        delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
+        trust: true, strict: false,
+      });
+    }
+    [...progress.children].forEach((el, i) => {
+      el.className = i < step ? "done" : i === step ? "current" : "";
+    });
+    document.getElementById("prev").disabled = step === 0;
+    document.getElementById("footerHint").textContent = `Step ${step + 1} of ${TOTAL}`;
+    updateDock();
+  }
+
+  function next() {
+    if (step >= TOTAL - 1) { showToast("Lesson complete 🎉"); return; }
+    step++;
+    render();
+    window.scrollTo({ top: 0 });
+    showToast(`Step ${step + 1} of ${TOTAL}`);
+  }
+  function prev() {
+    if (step === 0) return;
+    step--;
+    render();
+    window.scrollTo({ top: 0 });
+  }
+
+  let toastTimer;
+  function showToast(text) {
+    toast.textContent = text;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1100);
+  }
+
+  document.querySelectorAll(".js-continue").forEach(b => b.addEventListener("click", next));
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.target.closest("input, textarea")) { e.preventDefault(); next(); }
+  });
+
+  const params = new URLSearchParams(location.search);
+  const VARIANTS = ["original", "top", "footer", "dock"];
+  function setVariant(v) {
+    document.body.dataset.variant = v;
+    document.querySelectorAll('.switcher input').forEach(r => { r.checked = r.value === v; });
+    updateDock();
+  }
+
+  document.querySelectorAll('.switcher input').forEach(r => r.addEventListener("change", () => {
+    setVariant(r.value);
+    history.replaceState(null, "", `?variant=${r.value}`);
+  }));
+
+  // The sentinel sits right after the inline footer; while it is below the viewport the sticky button is floating.
+  const footerInline = document.getElementById("footerInline");
+  const sentinel = document.getElementById("dockSentinel");
+  function updateDock() {
+    footerInline.classList.toggle("stuck", sentinel.getBoundingClientRect().top > innerHeight);
+  }
+  addEventListener("scroll", updateDock, { passive: true });
+  addEventListener("resize", updateDock);
+
+  if (VARIANTS.includes(params.get("variant"))) setVariant(params.get("variant"));
+  if (params.has("embed")) document.body.classList.add("embed");
+
+  window.lesson = {
+    TOTAL,
+    setVariant,
+    go(n) { step = n; render(); },
+    updateDock,
+  };
+
+  function graphSvg() {
+    const W = 220, H = 180, ox = 104, oy = 150, sx = 38, sy = 30;
+    const X = x => ox + x * sx, Y = y => oy - y * sy;
+    let parabola = "";
+    for (let x = -2.05; x <= 1.15; x += 0.05) parabola += (parabola ? "L" : "M") + X(x).toFixed(1) + "," + Y(x * x + x + 1).toFixed(1);
+    return `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="KaTeX_Math, serif" font-style="italic" font-size="10">
+        <defs><marker id="ah" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#222"/></marker></defs>
+        <line x1="8" y1="${oy}" x2="${W - 8}" y2="${oy}" stroke="#222" marker-end="url(#ah)"/>
+        <line x1="${ox}" y1="${H}" x2="${ox}" y2="6" stroke="#222" marker-end="url(#ah)"/>
+        <text x="${W - 4}" y="${oy + 4}">x</text>
+        <text x="${ox - 3}" y="4" dy="0">y</text>
+        <path d="M${X(-2.6)},${Y(-0.6)} L${X(2.6)},${Y(4.6)}" stroke="#f0b257" stroke-width="1.4" fill="none"/>
+        <path d="${parabola}" stroke="#4e7fc0" stroke-width="1.6" fill="none"/>
+        <circle cx="${X(-1)}" cy="${Y(1)}" r="2.6" fill="#2b4c80"/>
+        <circle cx="${X(1)}" cy="${Y(3)}" r="2.6" fill="#2b4c80"/>
+        <text x="${X(1.1)}" y="${Y(2.7)}" fill="#f0b257">y = x + 2</text>
+        <text x="4" y="${Y(1.85)}" fill="#4e7fc0">y = x² + x + 1</text>
+      </svg>`;
+  }
+
+  window.addEventListener("DOMContentLoaded", render);
+</script>
+</body>
+</html>
