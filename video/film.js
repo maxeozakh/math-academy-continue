@@ -55,12 +55,12 @@
 
   const panes = ['left', 'right'].map(id => {
     const frame = el(id);
-    return { id, frame, box: frame.parentElement, script: SCRIPTS[id], cur: el(id[0] + 'cur'), ring: el(id[0] + 'ring'), stats: el(id[0] + 'stats'), shown: {} };
+    return { id, frame, box: frame.parentElement, script: SCRIPTS[id], cur: el(id[0] + 'cur'), ring: el(id[0] + 'ring'), shown: {} };
   });
   const isQuestion = step => step % 2 === 1;
 
   function stateAt(p, t) {
-    const s = { variant: p.script.variantAt(t), step: 0, answer: {}, submitted: false, focus: null, scroll: 0, scrolled: 0 };
+    const s = { variant: p.script.variantAt(t), step: 0, answer: {}, submitted: false, focus: null, scroll: 0 };
     for (const e of p.script.events) {
       if (start(e) > t) break;
       if (e.type === 'click') {
@@ -75,8 +75,7 @@
       } else if (e.type === 'flick' && e.max !== undefined) {
         const s0 = s.scroll, span = (e.to - e.from) / e.n, i = Math.min(e.n - 1, Math.floor((t - e.from) / span));
         const w = t >= e.to ? 1 : easeOut(seg(t - e.from - i * span, 0, span * .75));
-        const pos = s0 + (e.max - s0) * Math.min(1, (i + w) / e.n);
-        s.scrolled += pos - s0; s.scroll = pos;
+        s.scroll = s0 + (e.max - s0) * Math.min(1, (i + w) / e.n);
       }
     }
     return s;
@@ -164,19 +163,12 @@
     Object.assign(p.ring.style, { display: 'block', width: 2 * r + 'px', height: 2 * r + 'px', opacity: .7 * (1 - rg),
       transform: `translate(${pos.x - r}px,${pos.y - r}px)` });
   }
-  function drawStats(p, s) {
-    const [steps, px] = p.stats.querySelectorAll('b');
-    steps.textContent = s.step;
-    px.textContent = Math.round(s.scrolled).toLocaleString('en-US') + ' px';
-  }
-
   function frame(t) {
     t = Math.max(0, Math.min(t, DUR));
     for (const p of panes) {
       const s = stateAt(p, t);
       apply(p, s);
       drawCursor(p, t);
-      drawStats(p, s);
     }
     const part = partAt(t);
     el('rtag').textContent = part.tag; el('rtitle').textContent = part.title;
