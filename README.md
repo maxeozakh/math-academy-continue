@@ -1,12 +1,12 @@
 # continue, without the scroll
 
-a prototype for math academy lessons: the continue button sits under the content, so every long step ends with a scroll to find it. three ways to keep it in reach. unofficial.
+a prototype for math academy lessons: submit and continue sit under the content, so every long lesson and every worked solution ends with a scroll to find them. three ways to keep them in reach. unofficial.
 
 **[open the prototype](https://maxeozakh.github.io/math-academy-continue/)**
 
-[![a 28 second before / after film](video/before-after.gif)](https://maxeozakh.github.io/math-academy-continue/video/before-after.mp4)
+[![a 10 second before / after film](video/before-after.gif)](https://maxeozakh.github.io/math-academy-continue/video/before-after.mp4)
 
-click the preview for the full film (1080p, 60 fps, no sound).
+left: today, scrolling to every button. right: the same chapters (lesson, typed answers, multiple choice) with proposals a, b and c in turn. click the preview for the full film (1080p, 60 fps, no sound).
 
 ## the proposals
 
@@ -14,7 +14,7 @@ click the preview for the full film (1080p, 60 fps, no sound).
 - **b · sticky footer**: a fixed bar at the bottom with continue and the step count
 - **c · docking button**: continue floats at the bottom while the content overflows and settles under the card when you reach the end; short steps look exactly like today
 
-enter continues in every variant. link straight to one with `?variant=original|top|footer|dock`.
+questions use the same button: submit (disabled until answered), then continue under the solution. enter triggers it in every variant. link straight to one with `?variant=original|top|footer|dock`.
 
 ## what's here
 
